@@ -333,6 +333,8 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
       break;
     case 'hosting_signup_form':
       $form['#attached']['css'][] = drupal_get_path('module', 'hosting_scratchpads') . '/css/hosting_scratchpads.css';
+      $form['#attached']['js'][] = drupal_get_path('module', 'beautytips') . '/js/jquery.bt.min.js';
+      $form['#attached']['js'][] = drupal_get_path('module', 'beautytips') . '/js/beautytips.min.js';
       $form['#prefix'] = '<div class="scratchpads-hosting-form">';
       $form['#suffix'] = '</div>';
       break;

@@ -4,6 +4,7 @@
  * Implements hook_install()
  */
 function hosting_scratchpads_install(){
+  // Captcha settings
   variable_set('captcha_add_captcha_description', FALSE);
   variable_set('captcha_administration_mode', 0);
   variable_set('captcha_allow_on_admin_pages', FALSE);
@@ -18,4 +19,9 @@ function hosting_scratchpads_install(){
     'form_id' => 'hosting_signup_form',
     'captcha_type' => 'default'
   ))->execute();
+  // Beautytips settings
+  variable_set('beautytips_default_style', 'hulu');
+  variable_set('beautytips_form_id', 'hosting_signup_form');
+  variable_set('beautytips_position', 'right');
+  variable_set('beautytips_text_input', 1);
 }

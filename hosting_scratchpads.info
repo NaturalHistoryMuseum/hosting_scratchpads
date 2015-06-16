@@ -3,4 +3,5 @@ description = "Extend a site to include additional fields relevant to a Scratchp
 package = "Hosting"
 dependencies[] = hosting
 dependencies[] = image_captcha
+dependencies[] = beautytips
 core = 7.x
