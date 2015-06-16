@@ -17,5 +17,5 @@ function hosting_scratchpads_install(){
   db_insert('captcha_points')->fields(array(
     'form_id' => 'hosting_signup_form',
     'captcha_type' => 'default'
-  ));
+  ))->execute();
 }
