@@ -20,8 +20,33 @@ function hosting_scratchpads_install(){
     'captcha_type' => 'default'
   ))->execute();
   // Beautytips settings
+  variable_set('beautytips_added_selectors_string', '');
+  variable_set('beautytips_always_add', 0);
+  variable_set('beautytips_defaults', array(
+    'fill' => '#F4F4F4',
+    'strokeStyle' => '#666666',
+    'spikeLength' => 20,
+    'spikeGirth' => 10,
+    'width' => 350,
+    'overlap' => 0,
+    'centerPointY' => 1,
+    'cornerRadius' => 0,
+    'cssStyles' => array(
+      'fontFamily' => '"Lucida Grande",Helvetica,Arial,Verdana,sans-serif',
+      'fontSize' => '12px',
+      'padding' => '10px 14px'
+    ),
+    'shadow' => 1,
+    'shadowColor' => 'rgba(0,0,0,.5)',
+    'shadowBlur' => 8,
+    'shadowOffsetX' => 4,
+    'shadowOffsetY' => 4
+  ));
   variable_set('beautytips_default_style', 'hulu');
+  variable_set('beautytips_drupal_help', 0);
   variable_set('beautytips_form_id', 'hosting_signup_form');
+  variable_set('beautytips_ltr', 0);
   variable_set('beautytips_position', 'right');
+  variable_set('beautytips_show_form', 0);
   variable_set('beautytips_text_input', 1);
 }
