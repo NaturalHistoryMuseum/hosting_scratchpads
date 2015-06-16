@@ -1,0 +1,6 @@
+name = "Hostmaster Scratchpads site"
+description = "Extend a site to include additional fields relevant to a Scratchpad"
+package = "Hosting"
+dependencies[] = hosting
+dependencies[] = image_captcha
+core = 7.x

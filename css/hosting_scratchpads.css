@@ -1,0 +1,20 @@
+#hosting-signup-form h2{
+  padding:10px 10px!important;  
+  color:#87ae28;
+  font-size:120%;
+}
+.scratchpads-hosting-client-form, .scratchpads-hosting-site-form{
+  width:50%;
+  float:left;
+}
+#hosting-signup-form>div>input, .scratchpads-hosting-client-form>*, .scratchpads-hosting-site-form>*{
+  margin:0 5px!important;
+  background-color:#eee!important;
+}
+#hosting-signup-form>div>input{
+  background-color:#87ae28!important;
+  margin-top:5px!important;
+}
+#edit-submit{
+  clear:both;
+}
