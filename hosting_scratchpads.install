@@ -49,4 +49,15 @@ function hosting_scratchpads_install(){
   variable_set('beautytips_position', 'right');
   variable_set('beautytips_show_form', 0);
   variable_set('beautytips_text_input', 1);
+  // Drop the key from the hosting_client table so that users with the same name
+  // can request Scratchpads.
+  // Wrapped in a try/catch block just in case the index has already been
+  // dropped.
+  try{
+    db_drop_index('hosting_client', 'uname_unq');
+    db_drop_index('users', 'name');
+  }
+  catch(Exception $e){
+    ;
+  }
 }
