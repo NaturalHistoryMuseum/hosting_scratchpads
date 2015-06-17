@@ -17,14 +17,16 @@ function drush_hosting_scratchpads_pre_provision_install($url = NULL){
  * Implementation of drush_hook_pre_hosting_task()
  */
 function drush_hosting_scratchpads_pre_hosting_task(){
-  $task = & drush_get_context('HOSTING_TASK');
-  if($task->ref->type == 'site' && ($task->task_type == 'install' || $task->task_type == 'verify')){
-    $task->options['client_title'] = $task->ref->client_title;
-    $task->options['fullname'] = $task->ref->client_name;
-    $task->options['institution'] = $task->ref->client_institution;
-    $task->options['site_title'] = $task->ref->site_title;
-    $task->options['client_email'] = $task->ref->client_title;
-    $task->options['country'] = $task->ref->client_country;
-    $task->options['taxonomic_scope'] = $task->ref->site_taxonomic_scope;
+  if(module_exists('hosting_scratchpads')){
+    $task = &drush_get_context('HOSTING_TASK');
+    if($task->ref->type == 'site'){
+      $task->context_options['client_title'] = $task->ref->client_title;
+      $task->context_options['fullname'] = $task->ref->client_name;
+      $task->context_options['institution'] = $task->ref->client_institution;
+      $task->context_options['site_title'] = $task->ref->site_title;
+      $task->context_options['client_email'] = $task->ref->client_title;
+      $task->context_options['country'] = $task->ref->client_country;
+      $task->context_options['taxonomic_scope'] = $task->ref->site_taxonomic_scope;
+    }
   }
 }
