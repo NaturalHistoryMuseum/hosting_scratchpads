@@ -1,6 +1,79 @@
 <?php
 
 /**
+ * Implements hook_node_insert()
+ */
+function hosting_scratchpads_node_insert($node){
+  static $previous_node = FALSE;
+  if(!$previous_node){
+    $previous_node = $node;
+  }
+  if($node->type == 'site'){
+    db_insert('hostmaster_scratchpads')->fields(array(
+      'nid' => $node->nid,
+      'client_title' => $previous_node->client_title,
+      'client_name' => $previous_node->title,
+      'client_email' => $previous_node->email,
+      'client_institution' => $previous_node->client_institution,
+      'client_country' => $previous_node->client_country,
+      'site_title' => $node->site_title,
+      'site_domain' => $node->title,
+      'site_taxonomic_scope' => $node->site_taxonomic_scope,
+      'site_comments' => $node->site_comments
+    ))->execute();
+  }
+}
+
+/**
+ * Implements hook_node_load()
+ */
+function hosting_scratchpads_node_load($nodes, $types){
+  // Decide whether any of $types are relevant to our purposes.
+  if(in_array('site', $types)){
+    // Gather our extra data for each of these nodes.
+    $results = db_select('hostmaster_scratchpads', 'h')->fields('h')->condition('nid', array_keys($nodes))->execute();
+    // Add our extra data to the node objects.
+    foreach($results as $record){
+      $nid = $record->nid;
+      unset($record->nid);
+      foreach($record as $key => $column){
+        $nodes[$nid]->$key = $column;
+      }
+    }
+  }
+}
+
+/**
+ * Tweak the view of the site node.
+ */
+function hosting_scratchpads_node_view_alter(&$build){
+  $weight = 100;
+  if($build['#node']->type == 'site'){
+    foreach(array(
+      'client_title',
+      'client_name',
+      'client_email',
+      'client_institution',
+      'client_country',
+      'site_title',
+      'site_domain',
+      'site_taxonomic_scope',
+      'site_comments'
+    ) as $key){
+      $name = explode('_', $key);
+      array_shift($name);
+      $name = t(ucfirst(implode(' ', $name)));
+      $build['info'][$key] = array(
+        '#type' => 'item',
+        '#title' => $name,
+        '#markup' => $build['#node']->$key . '&nbsp;',
+        '#weight' => $weight++
+      );
+    }
+  }
+}
+
+/**
  * Implements hook_form_alter()
  */
 function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
@@ -61,13 +134,13 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           'Other' => 'Other'
         )
       );
-      $form['institution'] = array(
+      $form['client_institution'] = array(
         '#title' => t('Institution'),
         '#description' => t('The institution with which you are most closely associated. If retired or amateur, please insert "N/A"'),
         '#type' => 'textfield',
         '#required' => TRUE
       );
-      $form['country'] = array(
+      $form['client_country'] = array(
         '#title' => t('Country'),
         '#description' => t('The country that you are based in.'),
         '#type' => 'select',

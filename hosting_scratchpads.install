@@ -61,3 +61,59 @@ function hosting_scratchpads_install(){
     ;
   }
 }
+
+/**
+ * Hook_schema
+ */
+function hosting_scratchpads_schema(){
+  return array(
+    'hostmaster_scratchpads' => array(
+      'fields' => array(
+        'nid' => array(
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE
+        ),
+        'client_title' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'client_name' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'client_email' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'client_institution' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'client_country' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'site_title' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'site_domain' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'site_taxonomic_scope' => array(
+          'type' => 'varchar',
+          'length' => 255
+        ),
+        'site_comments' => array(
+          'type' => 'text',
+          'size' => 'medium'
+        )
+      ),
+      'primary key' => array(
+        'nid'
+      )
+    )
+  );
+}
