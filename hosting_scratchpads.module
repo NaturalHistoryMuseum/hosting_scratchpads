@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Implements hook_allow_domain()
+ * 
+ * We restrict access to .scratchpads.eu and taxon.name
+ */
+function hosting_scratchpads_allow_domain($url, $params){
+  global $user;
+  if($user->uid == 0 && (substr($url, -11) == '.taxon.name' || substr($url, -15) == '.scratchpads.eu')){return FALSE;}
+  return TRUE;
+}
+
+/**
  * Implements hook_node_insert()
  */
 function hosting_scratchpads_node_insert($node){
