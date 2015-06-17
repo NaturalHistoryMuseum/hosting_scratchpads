@@ -60,15 +60,17 @@ function hosting_scratchpads_node_view_alter(&$build){
       'site_taxonomic_scope',
       'site_comments'
     ) as $key){
-      $name = explode('_', $key);
-      array_shift($name);
-      $name = t(ucfirst(implode(' ', $name)));
-      $build['info'][$key] = array(
-        '#type' => 'item',
-        '#title' => $name,
-        '#markup' => $build['#node']->$key . '&nbsp;',
-        '#weight' => $weight++
-      );
+      if(isset($build['#node']->$key)){
+        $name = explode('_', $key);
+        array_shift($name);
+        $name = t(ucfirst(implode(' ', $name)));
+        $build['info'][$key] = array(
+          '#type' => 'item',
+          '#title' => $name,
+          '#markup' => $build['#node']->$key . '&nbsp;',
+          '#weight' => $weight++
+        );
+      }
     }
   }
 }
