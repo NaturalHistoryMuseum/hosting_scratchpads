@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_pre_provision_install
  */
-function drush_hostmaster_scratchpad_pre_provision_install($url = NULL){
+function drush_hosting_scratchpads_pre_provision_install($url = NULL){
   drush_set_option('site_title', drush_get_option('site_title', FALSE), 'site');
   drush_set_option('client_title', drush_get_option('client_title', FALSE), 'site');
   drush_set_option('country', drush_get_option('country', FALSE), 'site');
@@ -16,7 +16,7 @@ function drush_hostmaster_scratchpad_pre_provision_install($url = NULL){
 /**
  * Implementation of drush_hook_pre_hosting_task()
  */
-function drush_hostmaster_scratchpad_pre_hosting_task(){
+function drush_hosting_scratchpads_pre_hosting_task(){
   $task = & drush_get_context('HOSTING_TASK');
   if($task->ref->type == 'site' && ($task->task_type == 'install' || $task->task_type == 'verify')){
     $task->options['client_title'] = $task->ref->client_title;
