@@ -5,14 +5,14 @@
  */
 function hosting_scratchpads_install(){
   // Captcha settings
-  variable_set('captcha_add_captcha_description', FALSE);
+  variable_set('captcha_add_captcha_description', 0);
   variable_set('captcha_administration_mode', 0);
-  variable_set('captcha_allow_on_admin_pages', FALSE);
+  variable_set('captcha_allow_on_admin_pages', 0);
   variable_set('captcha_default_challenge', 'image_captcha/Image');
-  variable_set('captcha_default_challenge_on_nonlisted_forms', FALSE);
+  variable_set('captcha_default_challenge_on_nonlisted_forms', 0);
   variable_set('captcha_default_validation', 1);
-  variable_set('captcha_enable_stats', FALSE);
-  variable_set('captcha_log_wrong_responses', FALSE);
+  variable_set('captcha_enable_stats', 0);
+  variable_set('captcha_log_wrong_responses', 0);
   variable_set('captcha_persistence', 0);
   db_delete('captcha_points')->execute();
   db_insert('captcha_points')->fields(array(
@@ -60,6 +60,13 @@ function hosting_scratchpads_install(){
   catch(Exception $e){
     ;
   }
+  // Aegir settings
+  variable_set('hosting_client_register_user', 1);
+  variable_set('hosting_require_disable_before_delete', 0);
+  variable_set('hosting_alias_subdomain', 'scratchpads.eu');
+  variable_set('hosting_alias_automatic_www', 1);
+  variable_set('hosting_alias_automatic_no_www', 1);
+  variable_set('hosting_alias_redirection', 1);
 }
 
 /**
