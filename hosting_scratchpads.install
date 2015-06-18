@@ -74,7 +74,7 @@ function hosting_scratchpads_install(){
  */
 function hosting_scratchpads_schema(){
   return array(
-    'hostmaster_scratchpads' => array(
+    'hosting_scratchpads' => array(
       'fields' => array(
         'nid' => array(
           'type' => 'int',

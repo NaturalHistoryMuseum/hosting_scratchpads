@@ -20,7 +20,42 @@ function hosting_scratchpads_node_insert($node){
     $previous_node = $node;
   }
   if($node->type == 'site'){
-    db_insert('hostmaster_scratchpads')->fields(array(
+    if($node->uid == 0){
+      // We've failed to save the user associated with the client, which
+      // suggests that a user with the same email address already exists. We
+      // load that client and swap.
+      $query = db_select('node', 'n');
+      $query->innerJoin('users', 'u', 'u.uid = n.uid');
+      $query->condition('n.type', 'client')->condition('u.mail', $node->email);
+      $query->fields('n', array(
+        'nid'
+      ));
+      $query->fields('u', array(
+        'uid'
+      ));
+      $result = $query->execute()->fetch();
+      // Delete the extra client that we do not require.
+      node_delete($node->client);
+      // Update this site node and the existing client node to point to the
+      // existing user.
+      db_update('node')->condition('nid', array(
+        $node->nid,
+        $result->nid
+      ))->fields(array(
+        'uid' => $result->uid
+      ))->execute();
+      db_update('node_revision')->condition('nid', array(
+        $node->nid,
+        $result->nid
+      ))->fields(array(
+        'uid' => $result->uid
+      ))->execute();
+      // Update the link to the client node.
+      db_update('hosting_site')->condition('nid', $node->nid)->fields(array(
+        'client' => $result->nid
+      ))->execute();
+    }
+    db_insert('hosting_scratchpads')->fields(array(
       'nid' => $node->nid,
       'client_title' => $previous_node->client_title,
       'client_name' => $previous_node->title,
@@ -42,7 +77,7 @@ function hosting_scratchpads_node_load($nodes, $types){
   // Decide whether any of $types are relevant to our purposes.
   if(in_array('site', $types)){
     // Gather our extra data for each of these nodes.
-    $results = db_select('hostmaster_scratchpads', 'h')->fields('h')->condition('nid', array_keys($nodes))->execute();
+    $results = db_select('hosting_scratchpads', 'h')->fields('h')->condition('nid', array_keys($nodes))->execute();
     // Add our extra data to the node objects.
     foreach($results as $record){
       $nid = $record->nid;
