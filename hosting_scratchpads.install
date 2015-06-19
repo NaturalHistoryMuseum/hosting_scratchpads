@@ -46,7 +46,7 @@ function hosting_scratchpads_install(){
   variable_set('beautytips_drupal_help', 0);
   variable_set('beautytips_form_id', 'hosting_signup_form');
   variable_set('beautytips_ltr', 0);
-  variable_set('beautytips_position', 'right');
+  variable_set('beautytips_position', 'left');
   variable_set('beautytips_show_form', 0);
   variable_set('beautytips_text_input', 1);
   // Drop the key from the hosting_client table so that users with the same name
