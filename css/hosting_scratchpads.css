@@ -2,21 +2,30 @@
   padding: 10px 10px !important;
   color: #87ae28;
   font-size: 120%;
+  background-color: #eee !important;
 }
 
-#hosting-signup-form .captcha {
-  width: 50%;
-  float: left;
+#edit-submit{
+  clear:both;
+}
+
+#hosting-signup-form input.form-text{
+  width:100% !important;
 }
 
 .scratchpads-hosting-client-form,.scratchpads-hosting-site-form {
-  width: 50%;
+  width: 48%;
   float: left;
+  padding:0;
+  margin:0;
+}
+.scratchpads-hosting-client-form{
+  float:right;
 }
 
-#hosting-signup-form>div>input,.scratchpads-hosting-client-form>*,.scratchpads-hosting-site-form>*,#hosting-signup-form .captcha>*
-  {
-  margin: 0 5px !important;
+.scratchpads-hosting-client-form>div,.scratchpads-hosting-site-form>div{
+  margin:0;
+  padding:5px;
   background-color: #eee !important;
 }
 
@@ -27,4 +36,9 @@
 
 #edit-submit {
   clear: both;
+}
+
+#hosting-signup-form .captcha {
+  clear:both;
+  width:48%;
 }
