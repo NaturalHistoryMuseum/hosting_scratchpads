@@ -57,7 +57,13 @@ function hosting_scratchpads_block_view($delta = 'logo'){
     case 'menu':
       return array(
         'subject' => '',
-        'content' => '<h3>MENU!</h3>'
+        'content' => '<ul class="menu"><li class="first leaf has-children active menu-mlid-487"><a href="http://scratchpads.eu/" id="menu-item-home" class="active">Home</a></li>
+<li class="leaf has-children menu-mlid-400"><a href="http://scratchpads.eu/news" id="menu-item-news">News</a></li>
+<li class="leaf has-children menu-mlid-399"><a href="http://scratchpads.eu/explore" id="menu-item-explore">Explore</a></li>
+<li class="leaf has-children menu-mlid-624"><a href="http://scratchpads.eu/support" id="menu-item-support">Support</a></li>
+<li class="leaf has-children menu-mlid-406"><a href="http://scratchpads.eu/develop" id="menu-item-develop">Develop</a></li>
+<li class="last leaf has-children menu-mlid-407"><a href="http://scratchpads.eu/about" id="menu-item-about">About us</a></li>
+</ul>'
       );
   }
 }
