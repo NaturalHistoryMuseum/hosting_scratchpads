@@ -22,11 +22,17 @@ function hosting_scratchpads_block_info(){
       'status' => 1,
       'region' => 'logo'
     ),
-    'logo' => array(
-      'info' => t('Scratchpads logo'),
+    'instructions' => array(
+      'info' => t('Scratchpads signup instructions'),
       'cache' => DRUPAL_CACHE_GLOBAL,
       'status' => 1,
-      'region' => 'logo'
+      'region' => 'sidebar_first'
+    ),
+    'menu' => array(
+      'info' => t('Scratchpads menu links'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      'status' => 1,
+      'region' => 'menu'
     )
   );
 }
@@ -40,6 +46,18 @@ function hosting_scratchpads_block_view($delta = 'logo'){
       return array(
         'subject' => '',
         'content' => '<div><a href="/"><img src="http://scratchpads.eu/sites/all/themes/scratchpads_eu/images/logo-green.png"/></a></div>'
+      );
+    case 'instructions':
+      return array(
+        'subject' => '',
+        'content' => '<p>Signing up for a Scratchpad is free, quick and simple! No knowledge of website creation is required and your site can cover any aspect of natural history (a taxonomic group, a geographical area, club or society, journal, etc).</p>
+<p>Sites can focus on specific taxonomic groups, or the biodiversity of a biogeographic region, or indeed any aspect of natural history. Scratchpads are also suitable for societies or for managing and presenting projects. Key features of Scratchpads (see also Scratchpads feature list) include: tools to manage biological classifications, bibliography management, media (images, video and audio), rich taxon pages (with structured descriptions, specimen records, and distribution data), and character matrices.</p>
+<p>Scratchpads support various ways of communicating with site members and visitors such as blogs, forums, newsletters and a commenting system.</p>'
+      );
+    case 'menu':
+      return array(
+        'subject' => '',
+        'content' => '<h3>MENU!</h3>'
       );
   }
 }

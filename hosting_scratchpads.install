@@ -336,6 +336,8 @@ function hosting_scratchpads_install(){
     'alpha_region_site_map_equal_height_element' => 0,
     'alpha_region_site_map_equal_height_container' => 0
   ));
+  // Disable the navigation block from the scratchpads theme.
+  db_delete('block')->condition('region', 'sidebar_first')->condition('module', 'system')->execute();
 }
 
 /**
