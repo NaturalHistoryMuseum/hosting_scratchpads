@@ -182,6 +182,10 @@ function hosting_scratchpads_node_view_alter(&$build){
  * Implements hook_form_alter()
  */
 function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
+  global $user;
+  if($user->uid){
+    drupal_goto('hosting/sites');
+  }
   if(arg(1) == 'signup'){
     switch($form_id){
       case 'site_node_form':
