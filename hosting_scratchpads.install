@@ -83,7 +83,7 @@ function hosting_scratchpads_install(){
   variable_set('hosting_alias_automatic_no_www', 1);
   variable_set('hosting_alias_redirection', 1);
   // Set the site front page to the signup form
-  variable_set('site_frontpage', '/hosting/signup');
+  variable_set('site_frontpage', 'hosting/signup');
   // Theme settings
   variable_set('node_admin_theme', 1);
   variable_set('admin_theme', 'seven');
