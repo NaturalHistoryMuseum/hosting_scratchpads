@@ -4,4 +4,5 @@ package = "Hosting"
 dependencies[] = hosting
 dependencies[] = image_captcha
 dependencies[] = beautytips
+dependencies[] = themekey
 core = 7.x

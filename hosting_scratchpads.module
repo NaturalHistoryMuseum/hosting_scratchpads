@@ -12,6 +12,39 @@ function hosting_scratchpads_allow_domain($url, $params){
 }
 
 /**
+ * Implements hook_block_info()
+ */
+function hosting_scratchpads_block_info(){
+  return array(
+    'logo' => array(
+      'info' => t('Scratchpads logo'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      'status' => 1,
+      'region' => 'logo'
+    ),
+    'logo' => array(
+      'info' => t('Scratchpads logo'),
+      'cache' => DRUPAL_CACHE_GLOBAL,
+      'status' => 1,
+      'region' => 'logo'
+    )
+  );
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function hosting_scratchpads_block_view($delta = 'logo'){
+  switch($delta){
+    case 'logo':
+      return array(
+        'subject' => '',
+        'content' => '<div><a href="/"><img src="http://scratchpads.eu/sites/all/themes/scratchpads_eu/images/logo-green.png"/></a></div>'
+      );
+  }
+}
+
+/**
  * Implements hook_node_insert()
  */
 function hosting_scratchpads_node_insert($node){
