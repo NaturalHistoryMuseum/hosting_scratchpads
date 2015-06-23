@@ -179,6 +179,35 @@ function hosting_scratchpads_node_view_alter(&$build){
 }
 
 /**
+ * Validate the site title.
+ */
+function hosting_scratchpads_site_domain_validate(&$form, &$form_state){ // Check that the title isn't already in use.
+  // Next, check the domain name resolves to Quartz
+  // If we have dots, then it is not a subdomain of myspecies.info - we need
+  // to check it.
+  if(strpos($form_state['values']['title'], '.')){
+    // We have a new domain, lets check it's pointing at Quartz
+    if(($submitted_host_ip = gethostbyname($form_state['values']['title'])) !== ($server_host_ip = gethostbyname($_SERVER['HTTP_HOST']))){
+      form_set_error('title', 'The domain name you have entered is not pointing at our server:<ul>
+  <li>' . $form_state['values']['title'] . ' = ' . $submitted_host_ip . '</li>
+  <li>'.$_SERVER['HTTP_HOST'].' = ' . $server_host_ip . '</li>
+</ul>');
+    }
+  }else{
+    form_set_value($form['site']['title'], trim($form_state['values']['title']) . '.myspecies.info', $form_state);
+  }
+  // Also check that the domain name is unique.
+  $query = db_select('node', 'n');
+  $query->innerJoin('hosting_site', 's', 'n.vid = s.vid');
+  $query->condition('s.status', -2, '>');
+  $query->condition('n.title', $form_state['values']['title']);
+  $query = $query->countQuery();
+  if($query->execute()->fetchField()){
+    form_set_error('title', 'The domain name you have chosen is already in use.');
+  }
+}
+
+/**
  * Implements hook_form_alter()
  */
 function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
@@ -564,6 +593,10 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
         );
         break;
       case 'hosting_signup_form':
+        // Validate the title, adding .myspecies.info if required.
+        $form['#validate'] = array(
+          'hosting_scratchpads_site_domain_validate'
+        );
         $form['#attached']['css'][] = drupal_get_path('module', 'hosting_scratchpads') . '/css/hosting_scratchpads.css';
         $form['#attached']['js'][] = drupal_get_path('module', 'beautytips') . '/js/jquery.bt.min.js';
         $form['#attached']['js'][] = drupal_get_path('module', 'beautytips') . '/js/beautytips.min.js';
