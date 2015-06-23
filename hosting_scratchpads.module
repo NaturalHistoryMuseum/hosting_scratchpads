@@ -183,10 +183,10 @@ function hosting_scratchpads_node_view_alter(&$build){
  */
 function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
   global $user;
-  if($user->uid){
-    drupal_goto('hosting/sites');
-  }
   if(arg(1) == 'signup'){
+    if($user->uid){
+      drupal_goto('hosting/sites');
+    }
     switch($form_id){
       case 'site_node_form':
         // Set the profile
