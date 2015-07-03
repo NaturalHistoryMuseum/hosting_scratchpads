@@ -248,23 +248,21 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#value' => 'en'
         );
         // Get the DB server with the least number of sites
-        //SELECT s.db_server FROM hosting_db_server d INNER JOIN node n ON d.nid = n.nid INNER JOIN hosting_site s ON s.db_server = n.nid WHERE n.title LIKE 'sp%' GROUP BY s.db_server ORDER BY COUNT(*) ASC LIMIT 1;
-        // FROM  ORDER BY COUNT(*) ASC LIMIT 1;
         $query = db_select('hosting_db_server', 'd');
         $query->innerJoin('node', 'n', 'd.nid = n.nid');
-        $query->innerJoin('hosting_site', 's', 's.db_server = n.nid');
+        $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
         $query->condition('n.title', 'sp%', 'LIKE');
-        $query->fields('s', array(
-          'db_server'
+        $query->fields('n', array(
+          'nid'
         ));
-        $query->groupBy('s.db_server');
+        $query->groupBy('n.nid');
         $alias = $query->addExpression('COUNT(*)', 'order_by_count');
         $query->orderBy($alias);
         $results = $query->execute()->fetch();
-        if($results->db_server && isset($form['db_server']['#options'][$results->db_server])){
+        if($results->nid && isset($form['db_server']['#options'][$results->nid])){
           $form['db_server'] = array(
             '#type' => 'value',
-            '#value' => $results->db_server
+            '#value' => $results->nid
           );
         }
         $form['form_title'] = array(
