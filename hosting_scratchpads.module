@@ -7,7 +7,9 @@
  */
 function hosting_scratchpads_allow_domain($url, $params){
   global $user;
-  if($user->uid == 0 && (substr($url, -11) == '.taxon.name' || substr($url, -15) == '.scratchpads.eu')){return FALSE;}
+  if($user->uid == 0 && (substr($url, -11) == '.taxon.name' || substr($url, -15) == '.scratchpads.eu')){
+    return FALSE;
+  }
   return TRUE;
 }
 
@@ -190,7 +192,7 @@ function hosting_scratchpads_site_domain_validate(&$form, &$form_state){ // Chec
     if(($submitted_host_ip = gethostbyname($form_state['values']['title'])) !== ($server_host_ip = gethostbyname($_SERVER['HTTP_HOST']))){
       form_set_error('title', 'The domain name you have entered is not pointing at our server:<ul>
   <li>' . $form_state['values']['title'] . ' = ' . $submitted_host_ip . '</li>
-  <li>'.$_SERVER['HTTP_HOST'].' = ' . $server_host_ip . '</li>
+  <li>' . $_SERVER['HTTP_HOST'] . ' = ' . $server_host_ip . '</li>
 </ul>');
     }
   }else{
@@ -269,27 +271,20 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#weight' => -1000,
           '#markup' => '<h2>' . t('About your site') . '</h2>'
         );
-        $form['title']['#attributes']['placeholder'] = 'mus-musculus';
         $form['title']['#description'] = '<h3>Your domain name should be:</h3><ul><li><em>Short</em>. You can choose up to 34 characters, but short names and single words are easier to remember. We recommend no more than 20 characters.</li><li><em>Simple</em>. The subdomain name should be your website\'s name.</li><li><em>Legal</em>. Spaces and special characters are not allowed. Remember also that domain names are NOT case sensitive.</li><li><em>Relevant</em>. For a taxonomic site, enter the highest taxon you will be working on, e.g. "diptera" or "britishdiptera".  For a society site, enter the society\'s acronym, e.g. "bogsoc" or "windsoc".</li></ul><h3>Using your own domain</h3><p>Users are more than welcome to purchase their own domain name for use with a Scratchpad.  All that is required is that the domain name is pointed at our server quartz.nhm.ac.uk which has the IP address 157.140.2.32.  If using your own domain name, the domain purchase should be completed before the Scratchpad application.</p><p>If you would like to use your own domain name, then enter the full domain name (without "http://").</p>';
         $form['site_title'] = array(
           '#required' => TRUE,
           '#type' => 'textfield',
           '#title' => t('Site title'),
           '#weight' => -11,
-          '#description' => 'The site title will appear in the header section of your Scratchpad by default but can be removed later.',
-          '#attributes' => array(
-            'placeholder' => 'My Mice!'
-          )
+          '#description' => 'The site title will appear in the header section of your Scratchpad by default but can be removed later.'
         );
         $form['site_taxonomic_scope'] = array(
           '#required' => TRUE,
           '#type' => 'textfield',
           '#title' => t('Taxonomic scope'),
           '#weight' => -9,
-          '#description' => t('The taxonomic group which best describes what taxa will be featured on your site. e.g. Insecta, Aves, Phthiraptera, Dragons'),
-          '#attributes' => array(
-            'placeholder' => 'Mus musculus'
-          )
+          '#description' => t('The taxonomic group which best describes what taxa will be featured on your site. e.g. Insecta, Aves, Phthiraptera, Dragons')
         );
         $form['site_comments'] = array(
           '#type' => 'textarea',
