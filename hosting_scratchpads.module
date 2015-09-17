@@ -194,6 +194,9 @@ function hosting_scratchpads_site_domain_validate(&$form, &$form_state){ // Chec
 </ul>');
     }
   }else{
+    if(!preg_match('/^[a-z0-9][a-z0-9\-]*[a-z0-9]$/', strtolower(trim($form_state['values']['title'])))){
+      form_set_error('title', 'The sub-domain you have entered is not valid. Please only use the characters a-z and 0-9 with dashes (-) allowed within the word.');
+    }
     form_set_value($form['site']['title'], trim($form_state['values']['title']) . '.myspecies.info', $form_state);
   }
   // Also check that the domain name is unique.
