@@ -19,3 +19,20 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
     }
   }
 }
+
+/**
+ * Implements drush_hook_provision_apache_vhost_config(). Returns an array of
+ * lines to add to the configuration.
+ */
+function drush_hosting_scratchpads_provision_apache_vhost_config($uri, $data){
+  switch($uri){
+    // Display the old publications crap.
+    case 'phthiraptera.info':
+      return array(
+        'RewriteCond %{REQUEST_URI} /Publications/',
+        'RewriteRule (.*) /var/www/phthiraptera.org$1',
+        'RewriteCond %{REQUEST_URI} /phthiraptera.org',
+        'RewriteRule /phthiraptera\.org(.*) /var/www/phthiraptera.org$1'
+      );
+  }
+}
