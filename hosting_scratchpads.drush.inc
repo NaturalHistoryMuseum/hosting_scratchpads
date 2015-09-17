@@ -32,7 +32,10 @@ function hosting_scratchpads_provision_apache_vhost_config($uri, $data){
         'RewriteCond %{REQUEST_URI} /Publications/',
         'RewriteRule (.*) /var/www/phthiraptera.org$1',
         'RewriteCond %{REQUEST_URI} /phthiraptera.org',
-        'RewriteRule /phthiraptera\.org(.*) /var/www/phthiraptera.org$1'
+        'RewriteRule /phthiraptera\.org(.*) /var/www/phthiraptera.org$1',
+        '<Directory /var/www/phthiraptera.org>',
+        '  Require all granted',
+        '</Directory>'
       );
   }
 }
