@@ -24,7 +24,7 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
  * Implements drush_hook_provision_apache_vhost_config(). Returns an array of
  * lines to add to the configuration.
  */
-function drush_hosting_scratchpads_provision_apache_vhost_config($uri, $data){
+function hosting_scratchpads_provision_apache_vhost_config($uri, $data){
   switch($uri){
     // Display the old publications crap.
     case 'phthiraptera.info':
