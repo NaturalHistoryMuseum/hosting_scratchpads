@@ -11,7 +11,7 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
         'client_title' => $task->ref->client_title,
         'client_name' => $task->ref->client_name,
         'client_institution' => $task->ref->client_institution,
-        'client_email' => $task->ref->client_title,
+        'client_email' => $task->ref->client_email,
         'client_country' => $task->ref->client_country,
         'site_title' => $task->ref->site_title,
         'site_taxonomic_scope' => $task->ref->site_taxonomic_scope
