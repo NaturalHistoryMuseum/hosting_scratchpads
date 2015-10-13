@@ -365,6 +365,13 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
   }
   // We do not allow the creation of Scratchpads using the standard form.
   if(arg(1) != 'signup' && $form_id == 'site_node_form' && !empty($form['profile']['#options'][HOSTING_SCRATCHPADS_PROFILE_NID])){
+    if($_GET['q'] == 'node/add/site'){
+      $form['message'] = array(
+        '#weight' => -100000,
+        '#markup' => '<p>Multiple sites can be created using the <a href="' . url('node/add/site/multi') . '">multisite form</a>.</p>',
+        '#type' => 'markup'
+      );
+    }
     unset($form['profile']['#options'][HOSTING_SCRATCHPADS_PROFILE_NID]);
   }else if(arg(1) == 'signup'){
     if($user->uid){
