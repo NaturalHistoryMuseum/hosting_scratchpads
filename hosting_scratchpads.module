@@ -1,4 +1,145 @@
 <?php
+define('HOSTING_SCRATCHPADS_PROFILE_NID', 624);
+define('HOSTING_SCRATCHPADS_TRAINING_PROFILE_NID', 625);
+
+/**
+ * Implements hook_menu()
+ */
+function hosting_scratchpads_menu(){
+  return array(
+    'node/add/site/multi' => array(
+      'title' => 'Create multiple sites',
+      'description' => 'Create multiple sites with a similar URL. This is useful for creating the training sites for a training course.',
+      'access arguments' => array(
+        'create site'
+      ),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array(
+        'hosting_scratchpads_multisite_form'
+      )
+    )
+  );
+}
+
+/**
+ * Form for creating multiple sites
+ */
+function hosting_scratchpads_multisite_form($form, &$form_state){
+  module_load_include('pages.inc', 'node');
+  $node = (object)array(
+    'uid' => $user->uid,
+    'name' => (isset($user->name) ? $user->name : ''),
+    'type' => 'site',
+    'language' => LANGUAGE_NONE
+  );
+  $site_form = drupal_get_form('site_node_form', $node);
+  drupal_set_title(t('Create multiple sites'), PASS_THROUGH);
+  $platform = 0;
+  foreach($site_form['platform']['#options'] as $key => $value){
+    // We default to the scratchpads-master platform, in case we do not
+    // have a stable platform
+    if($key > $platform && ($value == 'scratchpads-master' || preg_match('/scratchpads-2.[0-9]*.[0-9]*/', $value))){
+      $platform = $key;
+    }
+  }
+  return array(
+    'domain' => array(
+      '#type' => 'textfield',
+      '#title' => t('Domain name(s)'),
+      '#description' => t('A range must be included in the domain name.  This must be in the format "[x-y]" where x and y are both integers, and y is greater than x.  e.g. <strong>training[1-20].taxon.name</strong>')
+    ),
+    'profile' => array(
+      '#type' => 'radios',
+      '#title' => t('Install profile'),
+      '#description' => t('The type of site to install.'),
+      '#options' => $site_form['profile']['#options'],
+      '#default_value' => HOSTING_SCRATCHPADS_TRAINING_PROFILE_NID
+    ),
+    'platform' => array(
+      '#type' => 'value',
+      '#value' => $platform
+    ),
+    'actions' => array(
+      '#type' => 'actions',
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => t('Save')
+      )
+    )
+  );
+}
+
+/**
+ * Submit function for the above form.
+ */
+function hosting_scratchpads_multisite_form_validate($form, &$form_state){
+  if(strpos($form_state['values']['domain'], '[') === FALSE || strpos($form_state['values']['domain'], ']') === FALSE){
+    form_set_error('domain', t('A valid range must be included in the format "[x-y]"'));
+  }else{
+    // We've got "[" and "]", now check that there is a range in between them.
+    $parts = preg_split('/[\[\]]/', $form_state['values']['domain']);
+    $range_parts = explode("-", $parts[1]);
+    if(!is_numeric($range_parts[0]) || !is_numeric($range_parts[1])){
+      form_set_error('domain', t('The range you have provided does not appear to be numeric'));
+    }else{
+      if($range_parts[0] >= $range_parts[1]){
+        form_set_error('domain', t('Please ensure the first number in your range is smaller than the second.'));
+      }
+    }
+  }
+}
+
+/**
+ * Submit function for the above form.
+ */
+function hosting_scratchpads_multisite_form_submit($form, &$form_state){
+  $parts = preg_split('/[\[\]]/', $form_state['values']['domain']);
+  $range_parts = explode("-", $parts[1]);
+  for($i = $range_parts[0]; $i <= $range_parts[1]; $i++){
+    // Set correct title
+    $title = $parts[0] . $i . $parts[2];
+    global $user;
+    // Get the DB server with the least number of sites
+    // Note, we do this EVERY time to ensure there is an even spread across each
+    // of the DB servers.
+    $query = db_select('hosting_db_server', 'd');
+    $query->innerJoin('node', 'n', 'd.nid = n.nid');
+    $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
+    $query->condition('n.title', variable_get('hosting_scratchpads_db_name_starts', 'sp') . '%', 'LIKE');
+    $query->fields('n', array(
+      'nid'
+    ));
+    $query->groupBy('n.nid');
+    $alias = $query->addExpression('COUNT(*)', 'order_by_count');
+    $query->orderBy($alias);
+    $results = $query->execute()->fetch();
+    // Save the node.
+    // FIXME - it's possible some of these attributes can be removed, but it's
+    // simpler to leave them in.
+    $node = (object)array(
+      'uid' => $user->uid,
+      'title' => $title,
+      'status' => 1,
+      'comment' => 0,
+      'promote' => 0,
+      'sticky' => 0,
+      'type' => 'site',
+      'language' => LANGUAGE_NONE,
+      'client' => 3556,
+      'db_server' => $results->nid,
+      'platform' => $form_state['values']['platform'],
+      'profile' => $form_state['values']['profile'],
+      'site_language' => 'en',
+      'site_status' => 0,
+      'verified' => 0,
+      'hosting_name' => $title,
+      'redirection' => 0,
+      'aliases' => array(),
+      'site_domain' => $title
+    );
+    node_save($node);
+  }
+}
 
 /**
  * Implements hook_allow_domain()
@@ -181,10 +322,10 @@ function hosting_scratchpads_node_view_alter(&$build){
 /**
  * Validate the site title.
  */
-function hosting_scratchpads_site_domain_validate(&$form, &$form_state){ // Check that the title isn't already in use.
-  // Next, check the domain name resolves to Quartz
-  // If we have dots, then it is not a subdomain of myspecies.info - we need
-  // to check it.
+function hosting_scratchpads_site_domain_validate(&$form, &$form_state){
+  // Check that the title isn't already in use. Next, check the domain name
+  // resolves to Quartz If we have dots, then it is not a subdomain of
+  // myspecies.info - we need to check it.
   if(strpos($form_state['values']['title'], '.')){
     // We have a new domain, lets check it's pointing at Quartz
     if(($submitted_host_ip = gethostbyname($form_state['values']['title'])) !== ($server_host_ip = gethostbyname($_SERVER['HTTP_HOST']))){
@@ -215,12 +356,23 @@ function hosting_scratchpads_site_domain_validate(&$form, &$form_state){ // Chec
  */
 function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
   global $user;
-  if(arg(1) == 'signup'){
+  if($form_id == 'site_node_form' && !empty($form['profile']['#options'])){
+    foreach($form['profile']['#options'] as $key => $value){
+      if(strpos(strtolower($value), 'emonocot') !== FALSE || strpos(strtolower($value), 'bioblitz') !== FALSE || strpos(strtolower($value), 'scratchpad_profile') !== FALSE || strpos(strtolower($value), 'scratchpad sandbox') !== FALSE || strpos(strtolower($value), 'scratchpad_2_migrate') !== FALSE || strpos(strtolower($value), 'drupal') !== FALSE){
+        unset($form['profile']['#options'][$key]);
+      }
+    }
+  }
+  // We do not allow the creation of Scratchpads using the standard form.
+  if(arg(1) != 'signup' && $form_id == 'site_node_form' && !empty($form['profile']['#options'][HOSTING_SCRATCHPADS_PROFILE_NID])){
+    unset($form['profile']['#options'][HOSTING_SCRATCHPADS_PROFILE_NID]);
+  }else if(arg(1) == 'signup'){
     if($user->uid){
       drupal_goto('hosting/sites');
     }
     switch($form_id){
       case 'site_node_form':
+        // Remove some of the shitty profiles that we really do not need.
         // Set the profile
         foreach($form['profile']['#options'] as $key => $value){
           if($value == 'Scratchpad 2 <em>(scratchpad_2)</em>'){
