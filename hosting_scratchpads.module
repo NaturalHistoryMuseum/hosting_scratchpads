@@ -375,7 +375,8 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
     unset($form['profile']['#options'][HOSTING_SCRATCHPADS_PROFILE_NID]);
   }else if(arg(1) == 'signup'){
     if($user->uid){
-      drupal_goto('hosting/sites');
+      // FIXME:.This is breaking server_node_form drush submission
+      // drupal_goto('hosting/sites');
     }
     switch($form_id){
       case 'site_node_form':
