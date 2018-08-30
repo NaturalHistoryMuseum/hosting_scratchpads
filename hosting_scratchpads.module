@@ -426,7 +426,8 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
         $query = db_select('hosting_db_server', 'd');
         $query->innerJoin('node', 'n', 'd.nid = n.nid');
         $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
-        $query->condition('n.title', variable_get('hosting_scratchpads_db_name_starts', 'sp') . '%', 'LIKE');
+        // Assumption: all database servers except localhost are eligible for hosting a scratchpad
+        $query->condition('n.title', 'localhost', '!=');
         $query->fields('n', array(
           'nid'
         ));
