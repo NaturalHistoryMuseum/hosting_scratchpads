@@ -36,9 +36,9 @@ function hosting_scratchpads_multisite_form($form, &$form_state){
   drupal_set_title(t('Create multiple sites'), PASS_THROUGH);
   $platform = 0;
   foreach($site_form['platform']['#options'] as $key => $value){
-    // We default to the scratchpads-master platform, in case we do not
+    // We default to the scratchpadsmaster platform, in case we do not
     // have a stable platform
-    if($key > $platform && ($value == 'scratchpads-master' || preg_match('/scratchpads-2.[0-9]*.[0-9]*/', $value))){
+    if($key > $platform && ($value == 'scratchpadsmaster' || preg_match('/scratchpads-2.[0-9]*.[0-9]*/', $value))){
       $platform = $key;
     }
   }
