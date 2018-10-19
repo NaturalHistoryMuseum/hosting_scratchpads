@@ -223,17 +223,35 @@ function hosting_scratchpads_node_insert($node){
     if($node->uid == 0){
       // We've failed to save the user associated with the client, which
       // suggests that a user with the same email address already exists. We
-      // load that client and swap.
-      $query = db_select('node', 'n');
-      $query->innerJoin('users', 'u', 'u.uid = n.uid');
-      $query->condition('n.type', 'client')->condition('u.mail', $node->email);
-      $query->fields('n', array(
-        'nid'
-      ));
-      $query->fields('u', array(
-        'uid'
-      ));
-      $result = $query->execute()->fetch();
+      // try to load that client and swap.
+
+      if(!hosting_scratchpads_swap_client($node)) {
+        // If that didn't work then we're probably doing another install method,
+        // through drush for example. Exit and carry on as normal.
+        return;
+      }
+    }
+
+    hosting_scratchpads_save_site($node, $previous_node);
+  }
+}
+
+/**
+ * Updates site node client
+ */
+function hosting_scratchpads_swap_client($node) {
+  $query = db_select('node', 'n');
+  $query->innerJoin('users', 'u', 'u.uid = n.uid');
+  $query->condition('n.type', 'client')->condition('u.mail', $node->email);
+  $query->fields('n', array(
+    'nid'
+  ));
+  $query->fields('u', array(
+    'uid'
+  ));
+  $result = $query->execute()->fetch();
+
+  if ($result->nid) {
       // Delete the extra client that we do not require.
       node_delete($node->client);
       // Update this site node and the existing client node to point to the
@@ -254,8 +272,17 @@ function hosting_scratchpads_node_insert($node){
       db_update('hosting_site')->condition('nid', $node->nid)->fields(array(
         'client' => $result->nid
       ))->execute();
-    }
-    db_insert('hosting_scratchpads')->fields(array(
+      return true;
+  }
+
+  return false;
+}
+
+/**
+ * Save a site/client to hosting_scratchpads table
+ */
+function hosting_scratchpads_save_site($node, $previous_node) {
+  return db_insert('hosting_scratchpads')->fields(array(
       'nid' => $node->nid,
       'client_title' => $previous_node->client_title,
       'client_name' => $previous_node->title,
@@ -267,7 +294,6 @@ function hosting_scratchpads_node_insert($node){
       'site_taxonomic_scope' => $node->site_taxonomic_scope,
       'site_comments' => $node->site_comments
     ))->execute();
-  }
 }
 
 /**
