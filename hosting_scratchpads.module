@@ -508,6 +508,7 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#type' => 'select',
           '#weight' => -11,
           '#options' => array(
+            'Mx' => 'Mx',
             'Mr' => 'Mr',
             'Mrs' => 'Mrs',
             'Miss' => 'Miss',
