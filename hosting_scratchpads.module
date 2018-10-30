@@ -90,6 +90,54 @@ function hosting_scratchpads_multisite_form_validate($form, &$form_state){
   }
 }
 
+function hosting_scratchpads_get_db_servers() {
+  $query = db_select('hosting_db_server', 'd');
+  $query->innerJoin('node', 'n', 'd.nid = n.nid');
+  $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
+  $query->leftJoin('hosting_context', 'c', 'c.nid = n.nid');
+  // Assumption: all database servers except localhost are eligible for hosting a scratchpad
+  $query->condition('n.title', 'localhost', '!=');
+  $query->fields('n', array(
+    'nid'
+  ));
+  $query->fields('c', array(
+    'name'
+  ));
+  $query->groupBy('n.nid');
+  $count = $query->addExpression('COUNT(*)', 'site_count');
+  $query->orderBy($count);
+
+  $servers = array();
+
+  return $query->execute();
+}
+
+function hosting_scratchpads_database_picker() {
+  $servers = array();
+
+  foreach(hosing_scratchpads_get_db_servers() as $row) {
+    $servers[$row->name] = $row->site_count;
+  }
+
+  while(true) {
+    asort($servers);
+    reset($servers);
+    $s = key($servers);
+
+    $servers[$s]++;
+    yield $s;
+  }
+}
+
+/**
+ * Get the DB server with the least number of sites.
+ * We do this to ensure there is an even spread across each
+ * of the DB servers.
+ */
+function hosting_scratchpads_pick_database() {
+  return hosting_scratchpads_get_db_servers()->fetch();
+}
+
 /**
  * Submit function for the above form.
  */
@@ -100,21 +148,9 @@ function hosting_scratchpads_multisite_form_submit($form, &$form_state){
     // Set correct title
     $title = $parts[0] . $i . $parts[2];
     global $user;
-    // Get the DB server with the least number of sites
-    // Note, we do this EVERY time to ensure there is an even spread across each
-    // of the DB servers.
-    $query = db_select('hosting_db_server', 'd');
-    $query->innerJoin('node', 'n', 'd.nid = n.nid');
-    $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
-    // Assumption: all database servers except localhost are eligible for hosting a scratchpad
-    $query->condition('n.title', 'localhost', '!=');
-    $query->fields('n', array(
-      'nid'
-    ));
-    $query->groupBy('n.nid');
-    $alias = $query->addExpression('COUNT(*)', 'order_by_count');
-    $query->orderBy($alias);
-    $results = $query->execute()->fetch();
+
+    $db_server = hosting_scratchpads_pick_database();
+
     // Save the node.
     // FIXME - it's possible some of these attributes can be removed, but it's
     // simpler to leave them in.
@@ -128,7 +164,7 @@ function hosting_scratchpads_multisite_form_submit($form, &$form_state){
       'type' => 'site',
       'language' => LANGUAGE_NONE,
       'client' => 3556,
-      'db_server' => $results->nid,
+      'db_server' => $db_server->nid,
       'platform' => $form_state['values']['platform'],
       'profile' => $form_state['values']['profile'],
       'site_language' => 'en',
@@ -450,22 +486,12 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#value' => 'en'
         );
         // Get the DB server with the least number of sites
-        $query = db_select('hosting_db_server', 'd');
-        $query->innerJoin('node', 'n', 'd.nid = n.nid');
-        $query->leftJoin('hosting_site', 's', 's.db_server = n.nid');
-        // Assumption: all database servers except localhost are eligible for hosting a scratchpad
-        $query->condition('n.title', 'localhost', '!=');
-        $query->fields('n', array(
-          'nid'
-        ));
-        $query->groupBy('n.nid');
-        $alias = $query->addExpression('COUNT(*)', 'order_by_count');
-        $query->orderBy($alias);
-        $results = $query->execute()->fetch();
-        if($results->nid){
+        $database = hosting_scratchpads_pick_database();
+
+        if($database->nid){
           $form['db_server'] = array(
             '#type' => 'value',
-            '#value' => $results->nid
+            '#value' => $database->nid
           );
         }
         $form['form_title'] = array(
@@ -801,4 +827,20 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
         break;
     }
   }
+}
+
+function hosting_scratchpads_get_remote_hosts() {
+  $query = db_select('hosting_service', 's');
+  $query->leftJoin('hosting_context', 'c', 'c.nid = s.nid');
+
+  $query->condition('s.service', 'remote_import');
+  $query->condition('s.type', 'hostmaster');
+
+  $query->fields('c', array(
+    'name'
+  ));
+  return array_map(
+    function($r) { return $r->name; },
+    $query->execute()->fetchAll()
+  );
 }

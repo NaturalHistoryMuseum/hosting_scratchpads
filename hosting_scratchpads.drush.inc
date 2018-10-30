@@ -30,22 +30,96 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
   }
 }
 
+
 /**
- * Implements drush_hook_provision_apache_vhost_config(). Returns an array of
- * lines to add to the configuration.
+ * Implements hook_drush_command().
  */
-function hosting_scratchpads_provision_apache_vhost_config($uri, $data){
-  switch($uri){
-    // Display the old publications crap.
-    case 'phthiraptera.info':
-      return array(
-        'RewriteCond %{REQUEST_URI} /Publications/',
-        'RewriteRule (.*) /var/www/phthiraptera.org$1',
-        'RewriteCond %{REQUEST_URI} /phthiraptera.org',
-        'RewriteRule /phthiraptera\.org(.*) /var/www/phthiraptera.org$1',
-        '<Directory /var/www/phthiraptera.org>',
-        '  Require all granted',
-        '</Directory>'
-      );
+function hosting_scratchpads_drush_command() {
+  $commands = array();
+
+  $commands['remote-import-scratchpad'] = array(
+    'description' => 'Import a scratchpad from a remote host.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'aliases' => array(),
+    'arguments' => array(
+       'site' => 'The site to import',
+     ),
+     'options' => array(
+       'new_platform' => 'The platform to import into. Defaults to scratchpads master.',
+       'remote_host' => 'The platform to import into. Defaults to scratchpads master.',
+     ),
+     'examples' => array(
+      'drush @old_hostmaster import-scratchpad example.myspecies.info' => 'Import example scratchpad into master platform.',
+      'drush @old_hostmaster import-scratchpad example.myspecies.info --platform=scratchpads-2.9.3' => 'Import into 2.9.3 platform',
+    )
+  );
+
+  $commands['remote-import-list-scratchpads'] = array(
+     'options' => array(
+       'remote_host' => 'The platform to import into. Defaults to scratchpads master.',
+     )
+  );
+
+  return $commands;
+}
+
+function hosting_scratchpads_drush_get_remote_host() {
+  $remote_host = drush_get_option('remote_host');
+
+  if(!$remote_host) {
+    $remotes = hosting_scratchpads_get_remote_hosts();
+    if(count($remotes) < 1) {
+      echo "No remote hostmaster installed";
+      die;
+    }
+    if(count($remotes) > 1) {
+      echo "Too many hostmasters:";
+      print_r($remotes);
+      die;
+    }
+
+    $remote_host = $remotes[0];
+  }
+
+  return $remote_host;
+}
+
+function drush_hosting_scratchpads_remote_import_list_scratchpads() {
+  $remote_host = hosting_scratchpads_drush_get_remote_host();
+
+  echo $remote_host;
+
+  $command = provision_backend_invoke($remote_host, 'provision-remote_import_list_sites', array(), array());
+
+  foreach ($command['context']['remote_sites_list'] as $site => $platform) {
+    echo "$site ($platform)\n";
+  }
+}
+
+function drush_hosting_scratchpads_remote_import_scratchpad(...$args) {
+  $remote_host = hosting_scratchpads_drush_get_remote_host();
+  $platform = drush_get_option('new_platform');
+  $databases = hosting_scratchpads_database_picker();
+
+  if(!$platform) {
+    echo "No platform, assuming scratchpasmaster";
+    $platform = 'platform_scratchpadsmaster';
+  }
+
+  $platform = preg_replace("/^(?!@?platform_)/", "@platform_", $platform);
+
+  foreach($args as $site) {
+    provision_backend_invoke(
+      $remote_host,
+      'provision-remote_import',
+      array(),
+      array(
+        'old_url' => $site,
+        'new_url' => $site,
+        'platform' => $platform,
+        'db_server' => $databases->current();
+      )
+    );
+    $databases->next();
   }
 }
