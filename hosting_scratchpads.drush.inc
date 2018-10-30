@@ -86,13 +86,16 @@ function hosting_scratchpads_drush_get_remote_host() {
 
 function drush_hosting_scratchpads_remote_import_list_scratchpads() {
   $remote_host = hosting_scratchpads_drush_get_remote_host();
+  $existing_sites = hosting_scratchpads_get_site_names();
 
   echo $remote_host;
 
   $command = provision_backend_invoke($remote_host, 'provision-remote_import_list_sites', array(), array());
 
   foreach ($command['context']['remote_sites_list'] as $site => $platform) {
-    echo "$site ($platform)\n";
+    if(!in_array($site, $existing_sites)) {
+      echo "$site ($platform)\n";
+    }
   }
 }
 
@@ -100,6 +103,7 @@ function drush_hosting_scratchpads_remote_import_scratchpad(...$args) {
   $remote_host = hosting_scratchpads_drush_get_remote_host();
   $platform = drush_get_option('new_platform');
   $databases = hosting_scratchpads_database_picker();
+  $existing_sites = hosting_scratchpads_get_site_names();
 
   if(!$platform) {
     echo "No platform, assuming scratchpasmaster";
@@ -109,6 +113,11 @@ function drush_hosting_scratchpads_remote_import_scratchpad(...$args) {
   $platform = preg_replace("/^(?!@?platform_)/", "@platform_", $platform);
 
   foreach($args as $site) {
+    if(in_array($site, $existing_sites)) {
+      echo "$site already exists, skipping...";
+      continue;
+    }
+
     provision_backend_invoke(
       $remote_host,
       'provision-remote_import',
@@ -117,7 +126,7 @@ function drush_hosting_scratchpads_remote_import_scratchpad(...$args) {
         'old_url' => $site,
         'new_url' => $site,
         'platform' => $platform,
-        'db_server' => $databases->current();
+        'db_server' => $databases->current()
       )
     );
     $databases->next();

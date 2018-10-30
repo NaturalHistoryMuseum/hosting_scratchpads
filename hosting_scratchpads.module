@@ -115,7 +115,7 @@ function hosting_scratchpads_get_db_servers() {
 function hosting_scratchpads_database_picker() {
   $servers = array();
 
-  foreach(hosing_scratchpads_get_db_servers() as $row) {
+  foreach(hosting_scratchpads_get_db_servers() as $row) {
     $servers[$row->name] = $row->site_count;
   }
 
@@ -842,5 +842,16 @@ function hosting_scratchpads_get_remote_hosts() {
   return array_map(
     function($r) { return $r->name; },
     $query->execute()->fetchAll()
+  );
+}
+
+function hosting_scratchpads_get_site_names() {
+  $query = db_select('hosting_site', 's');
+  $query->leftJoin('node' 'n', 's.nid = n.nid');
+  $query->fields('n', array('title'));
+
+  return array_map(
+    function($r) { return $r->title; },
+    $query->execute()->fetchAll();
   );
 }
