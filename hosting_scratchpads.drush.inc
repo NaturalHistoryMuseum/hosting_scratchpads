@@ -8,6 +8,16 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
     if($task->ref->type == 'site'){
       $task->options['client_name'] = $task->context_options['client_name'] = $task->ref->client_name;
       $task->options['client_email'] = $task->context_options['client_email'] = $task->ref->client_email;
+
+    # If we don't have a client email, load the client and use the associated user email
+    if(is_null($task->options['client_email']) && $task->options['client_name']){
+        $client = hosting_import_client($task->options['client_name']);
+        $client_user = user_load($client->uid);
+        $task->ref->client_email=$client_user->mail;
+        $task->options['client_email']=$client_user->mail;
+        var_dump($task->ref->client_email);
+    }
+
       $task->context_options['site_data'] = array(
         'client_title' => $task->ref->client_title,
         'client_name' => $task->ref->client_name,
