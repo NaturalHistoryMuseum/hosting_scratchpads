@@ -25,15 +25,17 @@ function hosting_scratchpads_hosting_site_context_options(&$task){
         'site_title' => $task->ref->site_title,
         'site_taxonomic_scope' => $task->ref->site_taxonomic_scope
       );
+    }
+  }
+}
 
-      // FIXME: The code above is supposed to add these variables to the alias config file
-      // however for some reason this no longer works and the alias file is created without site_data.
-      // We can't even create it manually because it gets overwritten with the version missing site_data.
-      // Instead we create a separate config file with ".site_data" in its name so that we have access to
-      // this information later - it's used in the provison_welcome_mail.inc (scratchpads2 repo)
-      // file and I'm not sure where else, if anywhere.
-      $config = new Provision_Config_Drushrc_Alias($task->ref->hosting_name.".site_data", array('site_data' => $task->context_options['site_data']));
-      $config->write();
+/**
+ * Implements hook_drush_context_import().
+ */
+function hosting_site_data_drush_context_import($context, &$node) {
+  if ($context->type == 'site') {
+    if (isset($context->site_data) && !empty($context->site_data)) {
+      $node->site_data = $context->site_data;
     }
   }
 }

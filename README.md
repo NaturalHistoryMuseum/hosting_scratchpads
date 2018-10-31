@@ -1,7 +1,4 @@
 Hosting Scratchpads
 ===================
 
-A simple module required by the Scratchpads Aegir setup and therefore required 
-by our Chef server configuration. For further information, you're better off 
-looking at 
-[scratchpads2-chef](https://github.com/NaturalHistoryMuseum/scratchpads2-chef).
+A module for Aegir, for dealing with scratchpads-specific stuff. Allows us to capture data about clients and their scratchpad, plus other misc things (e.g. automatically selecting the most empty database for a new site).
