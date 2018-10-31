@@ -56,7 +56,7 @@ function hosting_scratchpads_drush_command() {
   );
 
   $commands['remote-import-list-scratchpads'] = array(
-    'description' => 'Print a list of sites on the remote host that are not present on this host, and their platform.'
+    'description' => 'Print a list of sites on the remote host that are not present on this host, and their platform.',
     'aliases' => array('remote-scratchpads'),
     'examples' => array(
       'drush @hm remote-import-list-scratchpads | less' => 'Get list and pipe to less',
