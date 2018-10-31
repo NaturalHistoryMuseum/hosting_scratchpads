@@ -67,7 +67,7 @@ function hosting_scratchpads_drush_get_remote_host() {
   $remote_host = drush_get_option('remote_host');
 
   if(!$remote_host) {
-    $remotes = hosting_scratchpads_get_remote_hosts();
+    $remotes = hosting_scratchpads_get_remote_import_hosts();
     if(count($remotes) < 1) {
       echo "No remote hostmaster installed\n";
       die;

@@ -90,6 +90,10 @@ function hosting_scratchpads_multisite_form_validate($form, &$form_state){
   }
 }
 
+/**
+ * Get a list of hosting databases, with their node `nid`, context `name` and `site_count`
+ * Returns DatabaseStatementInterface; you'll have to call fetch or fetchAll on it
+ */
 function hosting_scratchpads_get_db_servers() {
   $query = db_select('hosting_db_server', 'd');
   $query->innerJoin('node', 'n', 'd.nid = n.nid');
@@ -112,18 +116,29 @@ function hosting_scratchpads_get_db_servers() {
   return $query->execute();
 }
 
+/**
+ * Returns an iterator for getting the least full database server.
+ * Only makes one db request so faster if you have to create a lot of sites.
+ * Yields the server's context name
+ */
 function hosting_scratchpads_database_picker() {
   $servers = array();
 
+  // Create a mapping of context name => number of sites on that server
   foreach(hosting_scratchpads_get_db_servers() as $row) {
     $servers[$row->name] = $row->site_count;
   }
 
+  // Iterate infinitely
   while(true) {
+    // Order by least number of sites first
     asort($servers);
+
+    // Set the internal array pointer to the first item & get its key
     reset($servers);
     $s = key($servers);
 
+    // Assume that by returning a key we'll create a site on that server
     $servers[$s]++;
     yield $s;
   }
@@ -415,6 +430,9 @@ function hosting_scratchpads_site_domain_validate(&$form, &$form_state){
   }
 }
 
+/**
+ * Return the node id for a given profile
+ */
 function _hosting_scratchpads_get_profile_nid($profile_name) {
   $query = db_select('hosting_package', 'p');
   $query->leftJoin('node', 'n', 'p.nid = n.nid');
@@ -829,7 +847,11 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
   }
 }
 
-function hosting_scratchpads_get_remote_hosts() {
+/**
+ * Return an array of context names for remote hostmasters,
+ * for use with importing remote sites
+ */
+function hosting_scratchpads_get_remote_import_hosts() {
   $query = db_select('hosting_service', 's');
   $query->leftJoin('hosting_context', 'c', 'c.nid = s.nid');
 
@@ -845,6 +867,9 @@ function hosting_scratchpads_get_remote_hosts() {
   );
 }
 
+/**
+ * Return an array of all domains maanged by aegir
+ */
 function hosting_scratchpads_get_site_names() {
   $query = db_select('hosting_site', 's');
   $query->leftJoin('node', 'n', 's.nid = n.nid');
