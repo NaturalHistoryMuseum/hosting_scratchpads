@@ -848,6 +848,22 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter for `hosting_remote_import_sites_choose_platform_form`
+ * Automatically select the most empty database server when importing remote sites
+ */
+function hosting_scratchpads_form_hosting_remote_import_sites_choose_platform_form_alter(&$form, &$form_state){
+    // Get the DB server with the least number of sites
+    $database = hosting_scratchpads_pick_database();
+
+    if($database->nid){
+      $form['db_server'] = array(
+        '#type' => 'value',
+        '#value' => $database->nid
+      );
+    }
+}
+
+/**
  * Return an array of context names for remote hostmasters,
  * for use with importing remote sites
  */
