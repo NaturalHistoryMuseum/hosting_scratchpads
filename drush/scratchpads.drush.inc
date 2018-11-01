@@ -34,7 +34,7 @@ function scratchpads_provision_register_autoload() {
  */
 function scratchpads_provision_services() {
   scratchpads_provision_register_autoload();
-  return array('site_data' => NULL);
+  return array('scratchpads' => NULL);
 }
 
 /**
