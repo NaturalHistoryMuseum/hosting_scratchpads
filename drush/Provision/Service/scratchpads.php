@@ -1,10 +1,10 @@
 <?php
 
 /**
- * The site_data service class.
+ * The scratchpads service class.
  */
-class Provision_Service_site_data extends Provision_Service {
-  public $service = 'site_data';
+class Provision_Service_scratchpads extends Provision_Service {
+  public $service = 'scratchpads';
 
   /**
    * Add the needed properties to the site context.
