@@ -2,7 +2,9 @@
 
 /**
  * @file
- * Example code for the fictional site_data module.
+ * Scratchpads drush module
+ * Handles the addition of the site_data to the site context
+ * The module name is the same as the feature name (scratchpads)
  */
 
 /**
