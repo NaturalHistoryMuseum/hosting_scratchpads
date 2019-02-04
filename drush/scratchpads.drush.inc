@@ -46,7 +46,7 @@ function scratchpads_validate_site_data() {
   if(isset(d()->site_data)) {
     drush_log('site_data received from the frontend (d()->site_data): ' . d()->site_data);
   } else {
-    drush_log('No site_data was stored in the alias file', 'error');
+    drush_log('No site_data was stored in the alias file', 'warning');
   }
 }
 
