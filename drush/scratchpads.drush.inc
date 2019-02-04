@@ -40,15 +40,19 @@ function scratchpads_provision_services() {
 }
 
 /**
- * Implements drush_hook_post_COMMAND().
+ * Logs site_data from the alias config if present
  */
-function drush_scratchpads_post_provision_install() {
-  drush_log('site_data received from the frontend (d()->site_data): ' . d()->site_data);
+function scratchpads_validate_site_data() {
+  if(isset(d()->site_data)) {
+    drush_log('site_data received from the frontend (d()->site_data): ' . d()->site_data);
+  } else {
+    drush_log('No site_data was stored in the alias file', 'error');
+  }
 }
 
 /**
  * Implements drush_hook_post_COMMAND().
  */
-function drush_scratchpads_post_provision_verify() {
-  drush_log('site_data received from the frontend (d()->site_data): ' . d()->site_data);
+function drush_scratchpads_post_provision_install() {
+  scratchpads_validate_site_data();
 }
