@@ -42,3 +42,12 @@
   clear:both;
   width:48%;
 }
+
+.hosting_scratchpads_domain {
+  display: flex;
+}
+
+.hosting_scratchpads_domain > input {
+  text-align: left;
+  flex-grow: 1;
+}
