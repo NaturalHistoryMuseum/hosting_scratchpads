@@ -403,10 +403,10 @@ function hosting_scratchpads_node_view_alter(&$build){
  */
 function hosting_scratchpads_site_domain_validate(&$form, &$form_state){
   // Check that the title isn't already in use. Next, check the domain name
-  // resolves to Quartz If we have dots, then it is not a subdomain of
+  // resolves to sp-control-01. If we have dots, then it is not a subdomain of
   // myspecies.info - we need to check it.
   if(strpos($form_state['values']['title'], '.')){
-    // We have a new domain, lets check it's pointing at Quartz
+    // We have a new domain, lets check it's pointing at sp-control-01
     if(($submitted_host_ip = gethostbyname($form_state['values']['title'])) !== ($server_host_ip = gethostbyname($_SERVER['HTTP_HOST']))){
       form_set_error('title', 'The domain name you have entered is not pointing at our server:<ul>
   <li>' . $form_state['values']['title'] . ' = ' . $submitted_host_ip . '</li>
@@ -516,7 +516,7 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#weight' => -1000,
           '#markup' => '<h2>' . t('About your site') . '</h2>'
         );
-        $form['title']['#description'] = '<h3>Your sub-domain name should be:</h3><ul>  <li><em>Short</em>. You can choose up to 34 characters, but short names and single words are easier to remember. We recommend no more than 20 characters.</li>  <li><em>Simple</em>. The subdomain name should be your website\'s name.</li>  <li><em>Legal</em>. Spaces and special characters are not allowed. Remember also that domain names are NOT case sensitive.</li>  <li><em>Relevant</em>. For a taxonomic site, enter the highest taxon you will be working on, e.g. "diptera" or "britishdiptera".  For a society site, enter the society\'s acronym, e.g. "bogsoc" or "windsoc".</li></ul><p>An example sub-domain for a Scratchpad on mice/rats would be <strong>muridae</strong>, which would give a Scratchpad URL of http://muridae.myspecies.info.</p><h3>Using your own domain</h3><p>Users are more than welcome to purchase their own domain name for use with a Scratchpad.  All that is required is that the domain name is pointed at our server quartz.nhm.ac.uk which has the IP address 157.140.2.32.  If using your own domain name, the domain purchase should be completed before the Scratchpad application.</p><p>If you would like to use your own domain name, then enter the full domain name (without "http://").</p>';
+        $form['title']['#description'] = '<h3>Your sub-domain name should be:</h3><ul>  <li><em>Short</em>. You can choose up to 34 characters, but short names and single words are easier to remember. We recommend no more than 20 characters.</li>  <li><em>Simple</em>. The subdomain name should be your website\'s name.</li>  <li><em>Legal</em>. Spaces and special characters are not allowed. Remember also that domain names are NOT case sensitive.</li>  <li><em>Relevant</em>. For a taxonomic site, enter the highest taxon you will be working on, e.g. "diptera" or "britishdiptera".  For a society site, enter the society\'s acronym, e.g. "bogsoc" or "windsoc".</li></ul><p>An example sub-domain for a Scratchpad on mice/rats would be <strong>muridae</strong>, which would give a Scratchpad URL of http://muridae.myspecies.info.</p><h3>Using your own domain</h3><p>Users are more than welcome to purchase their own domain name for use with a Scratchpad.  All that is required is that the domain name is pointed at our server scratchpads.eu which has the IP address 157.140.2.32.  If using your own domain name, the domain purchase should be completed before the Scratchpad application.</p><p>If you would like to use your own domain name, then enter the full domain name (without "http://").</p>';
         $form['title']['#title'] = 'Subdomain name';
         $form['site_title'] = array(
           '#required' => TRUE,
