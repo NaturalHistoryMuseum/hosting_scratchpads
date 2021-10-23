@@ -506,7 +506,7 @@ function hosting_scratchpads_form_alter(&$form, &$form_state, $form_id){
           '#markup' => '<h2>' . t('About your site') . '</h2>'
         );
 
-        $form['title']['#suffix'] = '.myspecies.info';
+        $form['title']['#field_suffix'] = '.myspecies.info';
 
         $form['title']['#description'] = '<h3>Your sub-domain name should be:</h3><ul>  <li><em>Short</em>. You can choose up to 34 characters, but short names and single words are easier to remember. We recommend no more than 20 characters.</li>  <li><em>Simple</em>. The subdomain name should be your website\'s name.</li>  <li><em>Legal</em>. Spaces and special characters are not allowed. Remember also that domain names are NOT case sensitive.</li>  <li><em>Relevant</em>. For a taxonomic site, enter the highest taxon you will be working on, e.g. "diptera" or "britishdiptera".  For a society site, enter the society\'s acronym, e.g. "bogsoc" or "windsoc".</li></ul><p>An example sub-domain for a Scratchpad on mice/rats would be <strong>muridae</strong>, which would give a Scratchpad URL of https://muridae.myspecies.info.</p>';
         $form['title']['#title'] = 'Subdomain name';
